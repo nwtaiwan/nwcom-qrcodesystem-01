@@ -793,6 +793,7 @@
                     const userRef = doc(db, 'users', user.uid);
                     
                     const localSessionId = localStorage.getItem('loginSessionId');
+                    // If no local session, this is a fresh login, so create one.
                     if (!localSessionId) {
                         const sessionId = crypto.randomUUID();
                         localStorage.setItem('loginSessionId', sessionId);
