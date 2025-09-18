@@ -109,7 +109,6 @@
                 height: 2.2cm; /* Fixed row height */
             }
         }
-
     </style>
 </head>
 <body class="bg-red-600 text-gray-800 transition-colors duration-300">
@@ -161,6 +160,7 @@
             <header class="flex flex-wrap justify-between items-center mb-6 pb-4 border-b">
                 <h1 class="text-3xl font-bold text-gray-800">會議活動列表</h1>
                 <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                    <span id="clock-display-events" class="text-sm text-gray-700 font-semibold"></span>
                     <button id="create-event-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700">新增會議活動</button>
                     <button id="user-management-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600">帳號管理</button>
                     <span id="user-display" class="text-sm text-gray-500"></span>
@@ -187,6 +187,7 @@
                     <p id="event-title-display" class="text-2xl text-gray-800 mt-1">QR Code 報到系統</p>
                 </div>
                 <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                    <span id="clock-display-details" class="text-sm text-gray-700 font-semibold"></span>
                     <span id="user-display-details" class="text-sm text-gray-500"></span>
                     <button id="logout-btn-details" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-semibold">登出</button>
                 </div>
@@ -198,6 +199,7 @@
                     <button id="tab-dashboard" class="tab-button active shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">儀表板</button>
                     <button id="tab-residents" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">住戶管理</button>
                     <button id="tab-scanner" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">掃碼報到</button>
+                    <button id="tab-voting" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">投票系統</button>
                     <button id="tab-settings" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">系統設定</button>
                 </nav>
             </div>
@@ -329,6 +331,29 @@
                              </ul>
                          </div>
                      </div>
+                </div>
+
+                <!-- Voting System -->
+                <div id="voting-content" class="hidden">
+                    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                        <div class="flex justify-between items-center mb-6 border-b pb-4">
+                            <h1 class="text-3xl font-bold text-gray-800">投票系統</h1>
+                            <div class="space-x-2">
+                                <button id="add-issue-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+                                    新增議題
+                                </button>
+                                <button id="delete-all-issues-btn" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+                                    全部刪除
+                                </button>
+                            </div>
+                        </div>
+                        <div id="issue-list" class="space-y-4">
+                            <!-- Voting issue cards will be generated here -->
+                        </div>
+                        <div id="no-issues-message" class="text-center text-gray-500 mt-8 hidden">
+                            <p>目前沒有任何議題。點擊「新增議題」按鈕來建立一個新的議題。</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Settings -->
@@ -501,6 +526,57 @@
             </form>
         </div>
     </div>
+
+    <!-- Add Voting Issue Modal -->
+    <div id="add-issue-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto transform transition-transform scale-100 duration-300">
+            <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white">
+                <h2 class="text-2xl font-bold text-gray-800">新增議題</h2>
+                <button id="close-issue-modal-btn" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="add-issue-form" class="p-6 space-y-4">
+                <div>
+                    <label for="issue-type" class="block text-sm font-medium text-gray-700 mb-1">議題編號</label>
+                    <select id="issue-type" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <option value="議題">議題</option>
+                        <option value="臨時動議">臨時動議</option>
+                        <option value="委員選舉">委員選舉</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="issue-title" class="block text-sm font-medium text-gray-700 mb-1">議題主旨</label>
+                    <input type="text" id="issue-title" required class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                    <label for="issue-description" class="block text-sm font-medium text-gray-700 mb-1">議題說明</label>
+                    <textarea id="issue-description" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                </div>
+                <div>
+                    <label for="proposer" class="block text-sm font-medium text-gray-700 mb-1">提案人</label>
+                    <input type="text" id="proposer" required class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">議題項目</label>
+                    <div id="options-container" class="space-y-2 mb-2">
+                        <!-- Option inputs will be generated here -->
+                    </div>
+                    <button type="button" id="add-option-btn" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                        新增項目
+                    </button>
+                </div>
+                <div class="flex justify-end pt-4 border-t">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+                        確認新增
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <!-- Share Modal -->
     <div id="share-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
@@ -521,6 +597,25 @@
         </div>
     </div>
 
+    <!-- Custom Alert/Confirm Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[100] flex items-center justify-center p-4">
+        <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900"></h3>
+                <div class="mt-2 px-7 py-3">
+                    <p id="modal-message" class="text-sm text-gray-500"></p>
+                </div>
+                <div id="modal-buttons" class="items-center px-4 py-3 flex justify-center gap-x-4">
+                    <!-- Buttons will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full hidden z-[101] flex items-center justify-center">
+        <div class="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-white"></div>
+    </div>
 
     <!-- Print Area -->
     <div id="print-area" class="hidden"></div>
@@ -528,9 +623,9 @@
 
     <!-- Firebase -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc, updateDoc, writeBatch, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc, updateDoc, writeBatch, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -558,10 +653,12 @@
         let currentUser = { uid: null, name: null, role: null };
         let selectedEventId = null;
         let allResidentsForSelectedEvent = [];
+        let allIssuesForSelectedEvent = [];
         let unsubscribeResidents = () => {};
         let unsubscribeSettings = () => {};
         let unsubscribeUsers = () => {};
         let unsubscribeSession = () => {};
+        let unsubscribeVotingIssues = () => {};
         let currentQuorumRatio = 0;
         let currentPersonQuorumRatio = 0;
 
@@ -572,6 +669,8 @@
         const residentDocPath = (eventId, residentId) => ["events", eventId, "residents", residentId];
         const usersCollectionPath = () => ["users"];
         const userDocPath = (userId) => ["users", userId];
+        const votingIssuesCollectionPath = (eventId) => ["events", eventId, "votingIssues"];
+        const votingIssueDocPath = (eventId, issueId) => ["events", eventId, "votingIssues", issueId];
 
         // This listener ensures that the rest of the code runs only after the HTML document is fully loaded.
         window.addEventListener('DOMContentLoaded', () => {
@@ -615,6 +714,49 @@
             
             appContainer.style.display = 'block';
 
+            // --- Custom Modal & Loader ---
+            const customModal = document.getElementById('custom-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalButtons = document.getElementById('modal-buttons');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+            const showLoader = () => loadingSpinner.classList.remove('hidden');
+            const hideLoader = () => loadingSpinner.classList.add('hidden');
+
+            function showAlert(title, message) {
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalButtons.innerHTML = `<button id="modal-ok-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none">確定</button>`;
+                customModal.classList.remove('hidden');
+
+                document.getElementById('modal-ok-btn').onclick = () => {
+                    customModal.classList.add('hidden');
+                };
+            }
+
+            function showConfirm(title, message) {
+                return new Promise((resolve) => {
+                    modalTitle.textContent = title;
+                    modalMessage.textContent = message;
+                    modalButtons.innerHTML = `
+                        <button id="modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300 focus:outline-none w-1/2">取消</button>
+                        <button id="modal-confirm-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none w-1/2">確定</button>
+                    `;
+                    customModal.classList.remove('hidden');
+
+                    document.getElementById('modal-confirm-btn').onclick = () => {
+                        customModal.classList.add('hidden');
+                        resolve(true);
+                    };
+
+                    document.getElementById('modal-cancel-btn').onclick = () => {
+                        customModal.classList.add('hidden');
+                        resolve(false);
+                    };
+                });
+            }
+
             // --- UI Logic ---
             function setupUI() {
                 const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`;
@@ -636,6 +778,17 @@
                     usernameInput.value = savedUsername;
                     rememberMeCheckbox.checked = true;
                 }
+                
+                // Clock setup
+                function updateClock() {
+                    const now = new Date();
+                    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Taipei' };
+                    const dateTimeString = now.toLocaleString('zh-TW', options).replace(/\//g, '-');
+                    document.getElementById('clock-display-events').textContent = dateTimeString;
+                    document.getElementById('clock-display-details').textContent = dateTimeString;
+                }
+                setInterval(updateClock, 1000);
+                updateClock();
             }
             setupUI();
 
@@ -643,6 +796,7 @@
             // --- Authentication & Role Management ---
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                showLoader();
                 const username = usernameInput.value;
                 const password = passwordInput.value;
                 const emailForFirebase = `${username}@qrsystem.app`;
@@ -667,30 +821,34 @@
                            const userCredential = await createUserWithEmailAndPassword(auth, 'test@qrsystem.app', '123456');
                            const userRef = doc(db, 'users', userCredential.user.uid);
                            await setDoc(userRef, { username: 'test', email: userCredential.user.email, role: 'system_admin' });
-                           alert('測試管理員帳號已建立，請重新登入。');
-
+                           showAlert('提示', '測試管理員帳號已建立，請重新登入。');
                         } catch (creationError) {
-                             alert(`測試帳號建立失敗: ${creationError.message}`);
+                            showAlert('建立帳號失敗', `測試帳號建立失敗: ${creationError.message}`);
                         }
                     } else if (error.code === 'auth/invalid-credential') {
-                             alert(`登入失敗: 帳號或密碼錯誤。`);
+                        showAlert('登入失敗', '帳號或密碼錯誤。');
                     } else {
-                             alert(`登入失敗: ${error.message}`);
+                        showAlert('登入失敗', error.message);
                     }
+                } finally {
+                    hideLoader();
                 }
             });
 
             const handleLogout = async () => {
-                if (currentUser && currentUser.uid) {
-                    const userRef = doc(db, 'users', currentUser.uid);
-                    try {
+                showLoader();
+                try {
+                    if (currentUser && currentUser.uid) {
+                        const userRef = doc(db, 'users', currentUser.uid);
                         await updateDoc(userRef, { loginSessionId: null });
-                    } catch (error) {
-                        console.error("Failed to clear session on logout:", error);
                     }
+                } catch (error) {
+                    console.error("Failed to clear session on logout:", error);
+                } finally {
+                    localStorage.removeItem('loginSessionId');
+                    await signOut(auth);
+                    hideLoader();
                 }
-                localStorage.removeItem('loginSessionId');
-                signOut(auth);
             };
 
             document.getElementById('logout-btn-events').addEventListener('click', handleLogout);
@@ -701,6 +859,7 @@
                 unsubscribeSettings();
                 unsubscribeUsers();
                 unsubscribeSession();
+                unsubscribeVotingIssues();
 
                 if (user && user.email) {
                     const username = user.email.split('@')[0];
@@ -725,8 +884,8 @@
                             const remoteSessionId = userDoc.data().loginSessionId;
                             if (localSessionId && remoteSessionId && localSessionId !== remoteSessionId) {
                                 unsubscribeSession(); 
-                                alert('您的帳號已在另一台裝置登入，此裝置將自動登出。');
                                 handleLogout();
+                                showAlert('強制登出', '您的帳號已在另一台裝置登入，此裝置將自動登出。');
                             }
                         }
                     });
@@ -755,12 +914,14 @@
                 const tabDashboard = document.getElementById('tab-dashboard');
                 const tabResidents = document.getElementById('tab-residents');
                 const tabScanner = document.getElementById('tab-scanner');
+                const tabVoting = document.getElementById('tab-voting');
                 const tabSettings = document.getElementById('tab-settings');
                 
                 // Set all to a baseline (Staff)
                 createEventBtn.style.display = 'none';
                 userManagementBtn.style.display = 'none';
                 tabResidents.style.display = 'none';
+                tabVoting.style.display = 'none';
                 tabSettings.style.display = 'none';
                 
                 // Dashboard and Scanner are always visible for logged-in users
@@ -768,23 +929,20 @@
                 tabScanner.style.display = 'block';
                 
                 // Junior Manager
-                if (role === 'junior_manager') {
+                if (role === 'junior_manager' || role === 'senior_manager' || role === 'system_admin') {
                     tabResidents.style.display = 'block';
+                    tabVoting.style.display = 'block';
                 }
 
                 // Senior Manager
-                if (role === 'senior_manager') {
+                if (role === 'senior_manager' || role === 'system_admin') {
                     createEventBtn.style.display = 'block';
-                    tabResidents.style.display = 'block';
                     tabSettings.style.display = 'block';
                 }
 
                 // System Admin
                 if (role === 'system_admin') {
-                    createEventBtn.style.display = 'block';
                     userManagementBtn.style.display = 'block';
-                    tabResidents.style.display = 'block';
-                    tabSettings.style.display = 'block';
                 }
             }
 
@@ -847,14 +1005,12 @@
 
                     eventsData.forEach(event => {
                         const card = document.createElement('div');
-                        const isOwner = currentUser.uid === event.creatorId;
-                        const isOwnerless = !event.creatorId;
-
-                        card.className = `p-6 rounded-xl shadow-md transition flex flex-col justify-between cursor-pointer hover:shadow-lg ${isOwner ? 'bg-red-600 text-white' : 'bg-white'}`;
+                        const canManage = currentUser.role === 'system_admin' || currentUser.role === 'senior_manager';
                         
-                        const showDeleteButton = currentUser.role === 'system_admin' || currentUser.role === 'senior_manager';
-                        const deleteButtonHTML = showDeleteButton ? `
-                            <button data-id="${event.id}" class="delete-event-card-btn ${isOwner ? 'text-red-200 hover:text-white' : 'text-gray-400 hover:text-red-600'}">
+                        card.className = `p-6 rounded-xl shadow-md transition flex flex-col justify-between cursor-pointer hover:shadow-lg bg-white`;
+                        
+                        const deleteButtonHTML = canManage ? `
+                            <button data-id="${event.id}" class="delete-event-card-btn text-gray-400 hover:text-red-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
@@ -866,14 +1022,14 @@
                         card.innerHTML = `
                             <div>
                                 <div class="flex justify-between items-start">
-                                    <h3 class="text-lg font-bold ${isOwner ? 'text-white' : 'text-red-700'}">${event.communityName}</h3>
+                                    <h3 class="text-lg font-bold text-red-700">${event.communityName}</h3>
                                     ${deleteButtonHTML}
                                 </div>
-                                <p class="text-md ${isOwner ? 'text-gray-200' : 'text-gray-800'}">${event.eventName}</p>
+                                <p class="text-md text-gray-800">${event.eventName}</p>
                             </div>
-                            <div class="mt-4 pt-4 border-t ${isOwner ? 'border-red-500' : 'border-gray-100'}">
-                                <p class="text-sm ${isOwner ? 'text-red-200' : 'text-gray-500'}">${formattedDateTime}</p>
-                                <p class="text-xs ${isOwner ? 'text-red-300' : 'text-gray-400'} mt-1">建立者: ${event.creatorName || 'N/A'}</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100">
+                                <p class="text-sm text-gray-500">${formattedDateTime}</p>
+                                <p class="text-xs text-gray-400 mt-1">建立者: ${event.creatorName || 'N/A'}</p>
                             </div>
                         `;
                         card.addEventListener('click', (e) => {
@@ -886,7 +1042,7 @@
                     });
                 }, error => {
                     console.error("Error listening to events collection:", error);
-                    alert("無法讀取活動列表，請檢查您的網路連線或 Firebase 安全規則。");
+                    showAlert("錯誤", "無法讀取活動列表，請檢查您的網路連線或 Firebase 安全規則。");
                 });
             }
             
@@ -895,13 +1051,17 @@
                 if (deleteButton) {
                     e.stopPropagation();
                     const eventId = deleteButton.dataset.id;
-                    if (confirm('您確定要刪除這個活動嗎？此操作將一併刪除所有住戶資料，且無法復原！')) {
+                    const confirmed = await showConfirm('確認刪除', '您確定要刪除這個活動嗎？此操作將一併刪除所有住戶資料與投票議題，且無法復原！');
+                    if (confirmed) {
+                        showLoader();
                         try {
                             await deleteEventAndSubcollection(eventId);
-                            alert('活動已成功刪除。');
+                            showAlert('成功', '活動已成功刪除。');
                         } catch (error) {
                             console.error("Error deleting event from card:", error);
-                            alert('刪除活動失敗。');
+                            showAlert('錯誤', '刪除活動失敗。');
+                        } finally {
+                            hideLoader();
                         }
                     }
                 }
@@ -925,10 +1085,11 @@
                 const eventDate = document.getElementById('new-event-date').value;
 
                 if (!communityName || !eventName || !eventDate) {
-                    alert('請填寫所有欄位！');
+                    showAlert('提示', '請填寫所有欄位！');
                     return;
                 }
-
+                
+                showLoader();
                 try {
                     await addDoc(collection(db, ...eventsCollectionPath()), {
                         communityName,
@@ -943,7 +1104,9 @@
                     createEventModal.classList.add('hidden');
                 } catch (error) {
                     console.error("Error creating event:", error);
-                    alert('建立活動失敗。');
+                    showAlert('錯誤', '建立活動失敗。');
+                } finally {
+                    hideLoader();
                 }
             });
 
@@ -956,12 +1119,27 @@
                 unsubscribeResidents();
                 unsubscribeResidents = listenToResidents(eventId);
                 
+                unsubscribeVotingIssues();
+                unsubscribeVotingIssues = listenToVotingIssues(eventId);
+
                 switchTab('dashboard');
             }
 
             // --- Tabs Navigation ---
-            const tabs = { dashboard: document.getElementById('tab-dashboard'), residents: document.getElementById('tab-residents'), scanner: document.getElementById('tab-scanner'), settings: document.getElementById('tab-settings') };
-            const contents = { dashboard: document.getElementById('dashboard-content'), residents: document.getElementById('residents-content'), scanner: document.getElementById('scanner-content'), settings: document.getElementById('settings-content')};
+            const tabs = { 
+                dashboard: document.getElementById('tab-dashboard'), 
+                residents: document.getElementById('tab-residents'), 
+                scanner: document.getElementById('tab-scanner'), 
+                voting: document.getElementById('tab-voting'),
+                settings: document.getElementById('tab-settings') 
+            };
+            const contents = { 
+                dashboard: document.getElementById('dashboard-content'), 
+                residents: document.getElementById('residents-content'), 
+                scanner: document.getElementById('scanner-content'), 
+                voting: document.getElementById('voting-content'),
+                settings: document.getElementById('settings-content')
+            };
             
             Object.keys(tabs).forEach(key => {
                 tabs[key].addEventListener('click', () => switchTab(key));
@@ -970,13 +1148,12 @@
             function switchTab(tabKey) {
                 if (tabKey !== 'scanner') stopScanner();
                 Object.keys(tabs).forEach(key => {
-                    // Only toggle if the tab exists and is visible
                     if(tabs[key] && tabs[key].style.display !== 'none') {
                         tabs[key].classList.toggle('active', key === tabKey);
                     }
-                     if(contents[key]) {
+                    if(contents[key]) {
                          contents[key].classList.toggle('hidden', key !== tabKey);
-                     }
+                    }
                 });
                 if (tabKey === 'scanner') {
                     setTimeout(() => {
@@ -1012,6 +1189,7 @@
             settingsForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!selectedEventId) return;
+                showLoader();
                 const eventRef = doc(db, ...eventDocPath(selectedEventId));
                 try {
                     await updateDoc(eventRef, {
@@ -1022,10 +1200,12 @@
                         personRatio: document.getElementById('person-ratio').value,
                         attendanceFee: document.getElementById('attendance-fee').value,
                     });
-                    alert('設定已儲存！');
+                    showAlert('成功', '設定已儲存！');
                 } catch (error) {
                     console.error("Error saving settings:", error);
-                    alert('儲存失敗，請檢查網路連線。');
+                    showAlert('錯誤', '儲存失敗，請檢查網路連線。');
+                } finally {
+                    hideLoader();
                 }
             });
             
@@ -1069,6 +1249,7 @@
             addResidentForm.addEventListener('submit', async(e) => {
                 e.preventDefault();
                 if (!selectedEventId) return;
+                showLoader();
                 
                 const qrcodeValue = residentQrcodeValueInput.value;
                 const unit = residentUnitInput.value;
@@ -1091,7 +1272,9 @@
                     closeResidentModal();
                 } catch (error) {
                     console.error("Error saving resident:", error);
-                    alert('儲存住戶失敗！請確認QR Code生成碼是否唯一。');
+                    showAlert('錯誤', '儲存住戶失敗！請確認QR Code生成碼是否唯一。');
+                } finally {
+                    hideLoader();
                 }
             });
 
@@ -1103,7 +1286,6 @@
                     allResidentsForSelectedEvent = [];
                     querySnapshot.forEach((doc) => allResidentsForSelectedEvent.push({ id: doc.id, ...doc.data() }));
                     
-                    // Sort by creation time to respect CSV import order
                     allResidentsForSelectedEvent.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
                     
                     allResidentsForSelectedEvent.forEach(resident => {
@@ -1149,12 +1331,10 @@
 
                 let checkedInCount = 0;
                 let recentCheckIns = [];
-                let totalOwnership = 0;
                 let checkedInOwnership = 0;
 
                 allResidentsForSelectedEvent.forEach(resident => {
                     const ownershipValue = parseFloat(resident.ownership) || 0;
-                    totalOwnership += ownershipValue;
                     if (resident.isCheckedIn) {
                         checkedInCount++;
                         checkedInOwnership += ownershipValue;
@@ -1225,7 +1405,8 @@
                 const residentId = target.dataset.id;
                 
                 if (target.classList.contains('delete-btn')) {
-                    if (confirm('確定要刪除這位住戶嗎？')) {
+                    const confirmed = await showConfirm('確認刪除', '確定要刪除這位住戶嗎？');
+                    if (confirmed) {
                         await deleteDoc(doc(db, ...residentDocPath(selectedEventId, residentId)));
                     }
                 }
@@ -1240,11 +1421,13 @@
                     if(resident) {
                         const residentRef = doc(db, ...residentDocPath(selectedEventId, residentId));
                         if (resident.isCheckedIn) {
-                            if (confirm(`確定要取消 ${resident.unit} ${resident.name} 的報到嗎？`)) {
+                            const confirmed = await showConfirm('取消報到', `確定要取消 ${resident.unit} ${resident.name} 的報到嗎？`);
+                            if (confirmed) {
                                 await updateDoc(residentRef, { isCheckedIn: false, checkInTimestamp: null, checkInMethod: null, checkInBy: null });
                             }
                         } else {
-                            if (confirm(`確定要為 ${resident.unit} ${resident.name} 手動報到嗎？`)) {
+                             const confirmed = await showConfirm('手動報到', `確定要為 ${resident.unit} ${resident.name} 手動報到嗎？`);
+                            if (confirmed) {
                                 await updateDoc(residentRef, { isCheckedIn: true, checkInTimestamp: new Date(), checkInMethod: '手動', checkInBy: currentUser.name });
                             }
                         }
@@ -1345,32 +1528,217 @@
                 }
             }
             
+            // --- Voting Logic ---
+            const addIssueModal = document.getElementById('add-issue-modal');
+            const closeIssueModalBtn = document.getElementById('close-issue-modal-btn');
+            const addIssueForm = document.getElementById('add-issue-form');
+            const issueListContainer = document.getElementById('issue-list');
+            const optionsContainer = document.getElementById('options-container');
+            const addOptionBtn = document.getElementById('add-option-btn');
+            const issueTypeSelect = document.getElementById('issue-type');
+            const noIssuesMessage = document.getElementById('no-issues-message');
+
+            const initOptions = () => {
+                optionsContainer.innerHTML = '';
+                const defaultOptions = ['同意', '不同意', '棄票'];
+                defaultOptions.forEach(option => {
+                    const optionInputDiv = document.createElement('div');
+                    optionInputDiv.className = 'flex items-center space-x-2';
+                    optionInputDiv.innerHTML = `
+                        <input type="text" value="${option}" required class="option-input w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    `;
+                    optionsContainer.appendChild(optionInputDiv);
+                });
+            };
+
+            document.getElementById('add-issue-btn').addEventListener('click', () => {
+                addIssueForm.reset();
+                initOptions();
+                addIssueModal.classList.remove('hidden');
+            });
+            
+            closeIssueModalBtn.addEventListener('click', () => addIssueModal.classList.add('hidden'));
+
+            addOptionBtn.addEventListener('click', () => {
+                const optionInputDiv = document.createElement('div');
+                optionInputDiv.className = 'flex items-center space-x-2';
+                optionInputDiv.innerHTML = `
+                    <input type="text" required class="option-input w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <button type="button" class="remove-option-btn text-red-500 hover:text-red-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                optionsContainer.appendChild(optionInputDiv);
+            });
+
+            optionsContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.remove-option-btn')) {
+                    e.target.closest('div').remove();
+                }
+            });
+            
+            const getNextIssueNumber = (type) => {
+                const count = allIssuesForSelectedEvent.filter(issue => issue.type === type).length;
+                return count + 1;
+            };
+
+            addIssueForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!selectedEventId) return;
+
+                const issueType = issueTypeSelect.value;
+                const newIssue = {
+                    type: issueType,
+                    number: getNextIssueNumber(issueType),
+                    title: document.getElementById('issue-title').value,
+                    description: document.getElementById('issue-description').value,
+                    proposer: document.getElementById('proposer').value,
+                    options: Array.from(document.querySelectorAll('.option-input')).map(input => input.value),
+                    createdAt: serverTimestamp()
+                };
+
+                showLoader();
+                try {
+                    await addDoc(collection(db, ...votingIssuesCollectionPath(selectedEventId)), newIssue);
+                    addIssueModal.classList.add('hidden');
+                    showAlert('成功', '議題已成功新增！');
+                } catch (error) {
+                    console.error("Error adding voting issue:", error);
+                    showAlert('錯誤', '新增議題失敗。');
+                } finally {
+                    hideLoader();
+                }
+            });
+            
+            function listenToVotingIssues(eventId) {
+                const q = query(collection(db, ...votingIssuesCollectionPath(eventId)), orderBy("createdAt", "asc"));
+                return onSnapshot(q, (snapshot) => {
+                    allIssuesForSelectedEvent = [];
+                    snapshot.forEach(doc => allIssuesForSelectedEvent.push({ id: doc.id, ...doc.data() }));
+                    renderVotingIssues();
+                });
+            }
+
+            function renderVotingIssues() {
+                issueListContainer.innerHTML = '';
+                if (allIssuesForSelectedEvent.length === 0) {
+                    noIssuesMessage.classList.remove('hidden');
+                } else {
+                    noIssuesMessage.classList.add('hidden');
+                    allIssuesForSelectedEvent.forEach((issue) => {
+                        const issueCard = document.createElement('div');
+                        issueCard.className = 'bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200';
+                        const optionsHtml = issue.options.map(option => `<span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">${option}</span>`).join(' ');
+                        
+                        issueCard.innerHTML = `
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800">${issue.type}${issue.number}: ${issue.title}</h3>
+                                    <p class="text-gray-600 mt-1 text-sm">提案人: ${issue.proposer}</p>
+                                </div>
+                                <button data-id="${issue.id}" data-title="${issue.type}${issue.number}: ${issue.title}" class="delete-issue-btn text-red-500 hover:text-red-700 transition">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.013 21H7.987a2 2 0 01-1.92-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-gray-700 text-sm mb-4">${issue.description}</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${optionsHtml}
+                            </div>
+                        `;
+                        issueListContainer.appendChild(issueCard);
+                    });
+                }
+            };
+            
+            issueListContainer.addEventListener('click', async (e) => {
+                const deleteButton = e.target.closest('.delete-issue-btn');
+                if (deleteButton) {
+                    const issueId = deleteButton.dataset.id;
+                    const issueTitle = deleteButton.dataset.title;
+                    const confirmed = await showConfirm('確認刪除', `確定要刪除「${issueTitle}」嗎？`);
+                    if (confirmed) {
+                        showLoader();
+                        try {
+                            await deleteDoc(doc(db, ...votingIssueDocPath(selectedEventId, issueId)));
+                            showAlert('成功', '議題已成功刪除！');
+                        } catch (error) {
+                            console.error("Error deleting issue:", error);
+                            showAlert('錯誤', '刪除失敗。');
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('delete-all-issues-btn').addEventListener('click', async () => {
+                if (allIssuesForSelectedEvent.length === 0) {
+                    showAlert('提示', '沒有可刪除的議題。');
+                    return;
+                }
+                const confirmed = await showConfirm('確認刪除', '確定要刪除所有議題嗎？此操作無法復原。');
+                if (confirmed) {
+                    showLoader();
+                    const batch = writeBatch(db);
+                    allIssuesForSelectedEvent.forEach(issue => {
+                        const issueRef = doc(db, ...votingIssueDocPath(selectedEventId, issue.id));
+                        batch.delete(issueRef);
+                    });
+                    try {
+                        await batch.commit();
+                        showAlert('成功', '所有議題已成功刪除！');
+                    } catch (error) {
+                        console.error("Error deleting all issues:", error);
+                        showAlert('錯誤', '刪除全部議題時發生錯誤。');
+                    } finally {
+                        hideLoader();
+                    }
+                }
+            });
+
+
             // --- Reset, Delete, and Print ---
             async function deleteEventAndSubcollection(eventId) {
                 if (!eventId) return;
+
+                // Batch delete residents
                 const residentsColRef = collection(db, ...residentsCollectionPath(eventId));
                 const residentsSnapshot = await getDocs(residentsColRef);
+                const batch1 = writeBatch(db);
                 if (!residentsSnapshot.empty) {
-                    const batch = writeBatch(db);
-                    residentsSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-                    await batch.commit();
+                    residentsSnapshot.docs.forEach(doc => batch1.delete(doc.ref));
+                    await batch1.commit();
                 }
+                
+                // Batch delete voting issues
+                const issuesColRef = collection(db, ...votingIssuesCollectionPath(eventId));
+                const issuesSnapshot = await getDocs(issuesColRef);
+                const batch2 = writeBatch(db);
+                if (!issuesSnapshot.empty) {
+                    issuesSnapshot.docs.forEach(doc => batch2.delete(doc.ref));
+                    await batch2.commit();
+                }
+
+                // Delete event doc
                 await deleteDoc(doc(db, ...eventDocPath(eventId)));
             }
 
             document.getElementById('reset-checkin-btn').addEventListener('click', async () => {
-                if (confirm('您確定要重設此活動所有住戶的報到紀錄嗎？此操作無法復原！')) {
-                    const batch = writeBatch(db);
+                const confirmed = await showConfirm('確認重設', '您確定要重設此活動所有住戶的報到紀錄嗎？此操作無法復原！');
+                if (confirmed) {
                     const residentsToCheck = allResidentsForSelectedEvent.filter(r => r.isCheckedIn);
                     if(residentsToCheck.length > 0) {
+                        showLoader();
+                        const batch = writeBatch(db);
                         residentsToCheck.forEach(resident => {
                             const residentRef = doc(db, ...residentDocPath(selectedEventId, resident.id));
                             batch.update(residentRef, { isCheckedIn: false, checkInTimestamp: null, checkInMethod: null, checkInBy: null });
                         });
                         await batch.commit();
-                        alert('所有報到紀錄已成功重設！');
+                        hideLoader();
+                        showAlert('成功', '所有報到紀錄已成功重設！');
                     } else {
-                        alert('目前沒有任何報到紀錄可重設。');
+                        showAlert('提示', '目前沒有任何報到紀錄可重設。');
                     }
                 }
             });
@@ -1380,20 +1748,24 @@
                 const eventSnap = await getDoc(eventRef);
                 if (eventSnap.exists()) {
                     const eventData = eventSnap.data();
-                    if (eventData.creatorId && eventData.creatorId !== currentUser.uid) {
-                        alert('權限不足！只有建立者才能刪除此活動。');
+                    if (eventData.creatorId && eventData.creatorId !== currentUser.uid && currentUser.role !== 'system_admin') {
+                        showAlert('權限不足', '只有建立者或系統管理員才能刪除此活動。');
                         return;
                     }
                 }
 
-                if (confirm('您確定要刪除整個活動嗎？包含所有住戶資料和報到紀錄，此操作無法復原！')) {
+                const confirmed = await showConfirm('確認刪除', '您確定要刪除整個活動嗎？包含所有住戶資料和報到紀錄，此操作無法復原！');
+                if (confirmed) {
+                    showLoader();
                     try {
                         await deleteEventAndSubcollection(selectedEventId);
-                        alert('活動已刪除！');
+                        showAlert('成功', '活動已刪除！');
                         showEventSelectionView();
                     } catch (error) {
                         console.error("Error deleting event from settings:", error);
-                        alert("刪除活動失敗。");
+                        showAlert("錯誤", "刪除活動失敗。");
+                    } finally {
+                        hideLoader();
                     }
                 }
             });
@@ -1425,52 +1797,37 @@
                 const residentsPerPage = 10;
                 
                 if (allResidentsForSelectedEvent.length === 0) {
-                    alert('沒有住戶資料可列印。');
+                    showAlert('提示', '沒有住戶資料可列印。');
                     return;
                 }
                 
-                // Helper function to format address for printing
                 function formatAddressForPrint(address) {
                     if (!address) return '<br><br>'; // Return empty lines to maintain height
                     let addr = address.trim();
-                    const parts = {
-                        road: '',
-                        numbers: '',
-                        floor: ''
-                    };
-
-                    // 1. Extract floor part (e.g., "5樓之1", "8樓")
+                    const parts = { road: '', numbers: '', floor: '' };
                     const floorMatch = addr.match(/(.*?)(\d+樓.*)/);
                     if (floorMatch) {
                         addr = floorMatch[1].trim();
                         parts.floor = floorMatch[2];
                     }
-
-                    // 2. Extract road/street/section part
                     const roadMatch = addr.match(/(.*?([路街段]))(.*)/);
                     if (roadMatch) {
                         parts.road = roadMatch[1];
                         parts.numbers = roadMatch[3].trim();
                     } else {
-                        // If no standard road name, assume the whole remaining part is for the numbers line
                         parts.numbers = addr;
                     }
-                    
-                    // Join and return as a multi-line string
                     return `${parts.road}<br>${parts.numbers}<br>${parts.floor}`;
                 }
 
-
                 const numPages = Math.ceil(allResidentsForSelectedEvent.length / residentsPerPage);
                 
-
                 for (let i = 0; i < numPages; i++) {
                     const start = i * residentsPerPage;
                     const end = start + residentsPerPage;
                     const pageResidents = allResidentsForSelectedEvent.slice(start, end);
 
                     printContent += `<div class="print-page">`;
-                    // Header
                     printContent += `
                         <div class="print-header">
                             <h1>${communityName}</h1>
@@ -1478,8 +1835,6 @@
                             <p>${formattedEventDate}</p>
                         </div>
                     `;
-
-                    // Table
                     printContent += `
                         <table class="print-table">
                             <thead>
@@ -1488,16 +1843,16 @@
                                     <th style="width: 1.8cm;">QR Code</th>
                                     <th style="width: 1.8cm;">戶號</th>
                                     <th style="width: 1.8cm;">姓名</th>
-                                    <th style="width: 4.5cm;">地址</th>
-                                    <th style="width: 1.5cm;">是否委<br>託出席</th>
-                                    <th style="width: 2.5cm;">委託關係</th>
-                                    <th style="width: 3.0cm;">簽到 / 領取出席費 (${attendanceFee}元)</th>
+                                    <th style="width: 1.8cm;">地址</th>
+                                    <th style="width: 1.8cm;">簽到</th>
+                                    <th style="width: 1.8cm;">是否委<br>託出席</th>
+                                    <th style="width: 3.8cm;">委託關係</th>
+                                    <th style="width: 1.8cm;">出席費</th>
                                     <th style="width: 1.8cm;">簽退</th>
                                 </tr>
                             </thead>
                             <tbody>
                     `;
-
                     pageResidents.forEach((resident, index) => {
                         const residentId = resident.id;
                         printContent += `
@@ -1507,6 +1862,7 @@
                                 <td>${resident.unit || ''}</td>
                                 <td style="word-break: break-all;">${resident.name || ''}</td>
                                 <td style="text-align: left; font-size: 8pt; line-height: 1.2;">${formatAddressForPrint(resident.address)}</td>
+                                <td></td>
                                 <td style="text-align: left; font-size: 8pt; line-height: 1.3;">
                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>本人</div>
                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>委託</div>
@@ -1517,7 +1873,9 @@
                                     <div><span style="font-size: 1.2em; margin-right: 4px;">□</span>其他區分所有權人</div>
                                     <div><span style="font-size: 1.2em; margin-right: 4px;">□</span>承租人</div>
                                 </td>
-                                <td></td>
+                                <td style="text-align: left; font-size: 8pt; line-height: 1.3;">
+                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>${attendanceFee} 元</div>
+                                </td>
                                 <td></td>
                             </tr>
                         `;
@@ -1525,16 +1883,9 @@
                     
                     if(pageResidents.length < residentsPerPage) {
                         for(let j=0; j < (residentsPerPage - pageResidents.length); j++){
-                            printContent += `
-                            <tr>
-                                <td>${start + pageResidents.length + j + 1}</td>
-                                <td></td><td></td><td></td><td></td>
-                                <td></td><td></td><td></td><td></td>
-                            </tr>
-                            `;
+                            printContent += `<tr><td>${start + pageResidents.length + j + 1}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
                         }
                     }
-
                     printContent += `
                             </tbody>
                         </table>
@@ -1547,18 +1898,12 @@
 
                 printArea.innerHTML = printContent;
                 
-                // Render QR Codes after they are in the DOM
                 for (let i = 0; i < allResidentsForSelectedEvent.length; i++) {
                     const resident = allResidentsForSelectedEvent[i];
                     const qrElement = document.getElementById(`print-qr-${resident.id}`);
                     if (qrElement) {
                         const qrValue = resident.qrcodeValue || resident.id;
-                        new QRCode(qrElement, {
-                            text: qrValue,
-                            width: 50,
-                            height: 50,
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
+                        new QRCode(qrElement, { text: qrValue, width: 50, height: 50, correctLevel: QRCode.CorrectLevel.H });
                     }
                 }
 
@@ -1573,7 +1918,7 @@
             // --- CSV and Mass Delete ---
             document.getElementById('export-csv-btn').addEventListener('click', () => {
                 if (allResidentsForSelectedEvent.length === 0) {
-                    alert('沒有住戶資料可匯出。');
+                    showAlert('提示', '沒有住戶資料可匯出。');
                     return;
                 }
                 const headers = ['qrcodeValue', 'unit', 'name', 'address', 'area', 'ownership'];
@@ -1607,19 +1952,21 @@
                     const text = e.target.result;
                     const rows = text.split('\n').filter(row => row.trim() !== '');
                     if (rows.length < 2) {
-                        alert('CSV檔案格式不符或沒有資料。');
+                        showAlert('錯誤', 'CSV檔案格式不符或沒有資料。');
                         return;
                     }
 
                     const headers = rows[0].trim().split(',').map(h => h.replace(/"/g, '').trim());
                     const requiredHeaders = ['qrcodeValue', 'unit', 'name', 'ownership'];
                     if (!requiredHeaders.every(h => headers.includes(h))) {
-                        alert(`CSV標頭缺少必要欄位。必須包含: ${requiredHeaders.join(', ')}`);
+                        showAlert('錯誤', `CSV標頭缺少必要欄位。必須包含: ${requiredHeaders.join(', ')}`);
                         return;
                     }
-
-                    if (!confirm(`即將匯入 ${rows.length - 1} 筆資料，這將會新增至現有列表，確定嗎？`)) return;
-
+                    
+                    const confirmed = await showConfirm('確認匯入', `即將匯入 ${rows.length - 1} 筆資料，這將會新增至現有列表，確定嗎？`);
+                    if (!confirmed) return;
+                    
+                    showLoader();
                     const batch = writeBatch(db);
                     const importTimestamp = Date.now();
                     for (let i = 1; i < rows.length; i++) {
@@ -1645,10 +1992,12 @@
 
                     try {
                         await batch.commit();
-                        alert(`成功匯入 ${rows.length - 1} 筆住戶資料！`);
+                        showAlert('成功', `成功匯入 ${rows.length - 1} 筆住戶資料！`);
                     } catch (error) {
                         console.error("CSV import failed: ", error);
-                        alert("匯入失敗，請檢查CSV檔案格式與內容。");
+                        showAlert("錯誤", "匯入失敗，請檢查CSV檔案格式與內容。");
+                    } finally {
+                        hideLoader();
                     }
                 };
                 reader.readAsText(file, "UTF-8");
@@ -1657,10 +2006,12 @@
 
             document.getElementById('delete-all-residents-btn').addEventListener('click', async () => {
                 if (allResidentsForSelectedEvent.length === 0) {
-                    alert('沒有住戶資料可刪除。');
+                    showAlert('提示', '沒有住戶資料可刪除。');
                     return;
                 }
-                if(confirm(`您確定要刪除此活動的全部 ${allResidentsForSelectedEvent.length} 筆住戶資料嗎？此操作無法復原！`)) {
+                const confirmed = await showConfirm('確認刪除', `您確定要刪除此活動的全部 ${allResidentsForSelectedEvent.length} 筆住戶資料嗎？此操作無法復原！`);
+                if(confirmed) {
+                    showLoader();
                     const batch = writeBatch(db);
                     allResidentsForSelectedEvent.forEach(resident => {
                         const residentRef = doc(db, ...residentDocPath(selectedEventId, resident.id));
@@ -1668,10 +2019,12 @@
                     });
                     try {
                         await batch.commit();
-                        alert('已成功刪除所有住戶。');
+                        showAlert('成功', '已成功刪除所有住戶。');
                     } catch (error) {
                         console.error("Delete all residents failed: ", error);
-                        alert("刪除失敗，請再試一次。");
+                        showAlert("錯誤", "刪除失敗，請再試一次。");
+                    } finally {
+                        hideLoader();
                     }
                 }
             });
@@ -1680,24 +2033,16 @@
             shareDashboardBtn.addEventListener('click', () => {
                 const url = `${window.location.origin}${window.location.pathname}?view=public&event=${selectedEventId}`;
                 shareQrCodeContainer.innerHTML = ''; // Clear previous QR Code
-                new QRCode(shareQrCodeContainer, {
-                    text: url,
-                    width: 256,
-                    height: 256,
-                });
+                new QRCode(shareQrCodeContainer, { text: url, width: 256, height: 256 });
                 shareLink.href = url;
                 shareUrlDisplay.textContent = url;
                 shareModal.classList.remove('hidden');
             });
 
-            closeShareModalBtn.addEventListener('click', () => {
-                shareModal.classList.add('hidden');
-            });
+            closeShareModalBtn.addEventListener('click', () => shareModal.classList.add('hidden'));
 
-             shareModal.addEventListener('click', (e) => {
-                 if (e.target === shareModal) {
-                     shareModal.classList.add('hidden');
-                 }
+            shareModal.addEventListener('click', (e) => {
+                if (e.target === shareModal) shareModal.classList.add('hidden');
             });
 
             // --- User Management Logic ---
@@ -1708,60 +2053,60 @@
                 const newUserRole = document.getElementById('new-user-role').value;
 
                 if(!newUsername || !newPassword){
-                    alert('請填寫帳號和密碼。');
+                    showAlert('提示', '請填寫帳號和密碼。');
                     return;
                 }
                 if(newPassword.length < 6){
-                    alert('密碼長度至少需要6個字元。');
+                    showAlert('提示', '密碼長度至少需要6個字元。');
                     return;
                 }
 
+                showLoader();
                 try {
-                    // We need a temporary auth instance to create the user without signing in the admin out
                     const tempApp = initializeApp(firebaseConfig, 'temp-app-for-user-creation');
                     const tempAuth = getAuth(tempApp);
                     
                     const email = `${newUsername}@qrsystem.app`;
                     const userCredential = await createUserWithEmailAndPassword(tempAuth, email, newPassword);
                     const userRef = doc(db, 'users', userCredential.user.uid);
-                    await setDoc(userRef, {
-                        username: newUsername,
-                        email: email,
-                        role: newUserRole
-                    });
-                    alert(`帳號 ${newUsername} 建立成功！`);
+                    await setDoc(userRef, { username: newUsername, email: email, role: newUserRole });
+                    
+                    await deleteApp(tempApp);
+                    
+                    showAlert('成功', `帳號 ${newUsername} 建立成功！`);
                     addUserForm.reset();
                 } catch (error) {
                     console.error("Error creating user:", error);
                     if(error.code === 'auth/email-already-in-use'){
-                        alert('錯誤：此帳號名稱已被使用。');
+                        showAlert('錯誤', '此帳號名稱已被使用。');
                     } else {
-                        alert(`建立帳號時發生錯誤： ${error.message}`);
+                        showAlert('錯誤', `建立帳號時發生錯誤： ${error.message}`);
                     }
+                } finally {
+                    hideLoader();
                 }
             });
 
             function listenToUsers() {
                  const q = query(collection(db, ...usersCollectionPath()));
                  return onSnapshot(q, (snapshot) => {
-                     const userListTbody = document.getElementById('users-list');
-                     userListTbody.innerHTML = '';
-                     snapshot.forEach(doc => {
-                         const userData = doc.data();
-                         // Do not display the currently logged-in admin in the list
-                         if(doc.id === currentUser.uid) return;
-                         
-                         const tr = document.createElement('tr');
-                         tr.innerHTML = `
-                             <td class="px-2 py-2 whitespace-nowrap">${userData.username}</td>
-                             <td class="px-2 py-2 whitespace-nowrap">${userData.role}</td>
-                             <td class="px-2 py-2 whitespace-nowrap text-sm font-medium">
-                                 <button data-id="${doc.id}" class="change-role-btn text-blue-600 hover:text-blue-900">變更角色</button>
-                                 <button data-id="${doc.id}" class="delete-user-btn text-red-600 hover:text-red-900 ml-2">刪除</button>
-                             </td>
-                         `;
-                         userListTbody.appendChild(tr);
-                     });
+                      const userListTbody = document.getElementById('users-list');
+                      userListTbody.innerHTML = '';
+                      snapshot.forEach(doc => {
+                          const userData = doc.data();
+                          if(doc.id === currentUser.uid) return;
+                          
+                          const tr = document.createElement('tr');
+                          tr.innerHTML = `
+                              <td class="px-2 py-2 whitespace-nowrap">${userData.username}</td>
+                              <td class="px-2 py-2 whitespace-nowrap">${userData.role}</td>
+                              <td class="px-2 py-2 whitespace-nowrap text-sm font-medium">
+                                  <button data-id="${doc.id}" class="change-role-btn text-blue-600 hover:text-blue-900">變更角色</button>
+                                  <button data-id="${doc.id}" class="delete-user-btn text-red-600 hover:text-red-900 ml-2">刪除</button>
+                              </td>
+                          `;
+                          userListTbody.appendChild(tr);
+                      });
                  });
             }
 
@@ -1770,31 +2115,33 @@
                 const userId = target.dataset.id;
                 
                 if (target.classList.contains('delete-user-btn')) {
-                    if (confirm('您確定要刪除這個帳號嗎？此操作會從資料庫移除，但請注意，您可能需要手動從 Firebase Authentication 主控台刪除使用者以釋放 email。')) {
+                    const confirmed = await showConfirm('確認刪除', '您確定要刪除這個帳號嗎？此操作會從資料庫移除，但請注意，您可能需要手動從 Firebase Authentication 主控台刪除使用者以釋放 email。');
+                    if (confirmed) {
                         try {
                            await deleteDoc(doc(db, ...userDocPath(userId)));
-                           alert('使用者資料已刪除。');
+                           showAlert('成功', '使用者資料已刪除。');
                         } catch(error) {
                             console.error("Error deleting user doc:", error);
-                            alert("刪除使用者資料失敗。");
+                            showAlert("錯誤", "刪除使用者資料失敗。");
                         }
                     }
                 }
 
                 if (target.classList.contains('change-role-btn')) {
+                    // This is a simple prompt, a proper UI would be a dropdown in a modal.
                     const newRole = prompt("請輸入新角色 (system_admin, senior_manager, junior_manager, staff):");
                     const validRoles = ['system_admin', 'senior_manager', 'junior_manager', 'staff'];
                     if (newRole && validRoles.includes(newRole)) {
                         try {
                             const userRef = doc(db, ...userDocPath(userId));
                             await updateDoc(userRef, { role: newRole });
-                            alert('角色已更新！');
+                            showAlert('成功', '角色已更新！');
                         } catch(error) {
                             console.error("Error updating role:", error);
-                            alert('更新角色失敗。');
+                            showAlert('錯誤', '更新角色失敗。');
                         }
                     } else if (newRole) {
-                        alert('無效的角色名稱！');
+                        showAlert('錯誤', '無效的角色名稱！');
                     }
                 }
             });
