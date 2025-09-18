@@ -1488,11 +1488,10 @@
                                     <th style="width: 1.8cm;">QR Code</th>
                                     <th style="width: 1.8cm;">戶號</th>
                                     <th style="width: 1.8cm;">姓名</th>
-                                    <th style="width: 5.5cm;">地址</th>
-                                    <th style="width: 1.8cm;">簽到</th>
+                                    <th style="width: 4.5cm;">地址</th>
                                     <th style="width: 1.5cm;">是否委<br>託出席</th>
-                                    <th style="width: 3cm;">委託關係</th>
-                                    <th style="width: 1.5cm;">出席費</th>
+                                    <th style="width: 2.5cm;">委託關係</th>
+                                    <th style="width: 3.0cm;">簽到 / 領取出席費 (${attendanceFee}元)</th>
                                     <th style="width: 1.8cm;">簽退</th>
                                 </tr>
                             </thead>
@@ -1508,7 +1507,6 @@
                                 <td>${resident.unit || ''}</td>
                                 <td style="word-break: break-all;">${resident.name || ''}</td>
                                 <td style="text-align: left; font-size: 8pt; line-height: 1.2;">${formatAddressForPrint(resident.address)}</td>
-                                <td></td>
                                 <td style="text-align: left; font-size: 8pt; line-height: 1.3;">
                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>本人</div>
                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>委託</div>
@@ -1519,9 +1517,7 @@
                                     <div><span style="font-size: 1.2em; margin-right: 4px;">□</span>其他區分所有權人</div>
                                     <div><span style="font-size: 1.2em; margin-right: 4px;">□</span>承租人</div>
                                 </td>
-                                <td style="text-align: left; font-size: 8pt; line-height: 1.3;">
-                                     <div style="display: flex; align-items: center;"><span style="font-size: 1.2em; margin-right: 4px;">□</span>${attendanceFee} 元</div>
-                                </td>
+                                <td></td>
                                 <td></td>
                             </tr>
                         `;
@@ -1534,7 +1530,6 @@
                                 <td>${start + pageResidents.length + j + 1}</td>
                                 <td></td><td></td><td></td><td></td>
                                 <td></td><td></td><td></td><td></td>
-                                <td></td>
                             </tr>
                             `;
                         }
