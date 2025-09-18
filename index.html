@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>西北社區QR Code報到與投票系統</title>
+    <title>西北社區QR Code報到系統</title>
     <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/6148f9_4ebee1eb9c114124805fddcbbc8c6e28~mv2.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -133,7 +133,7 @@
             <div class="flex justify-center mb-4">
                 <img src="https://static.wixstatic.com/media/6148f9_4ebee1eb9c114124805fddcbbc8c6e28~mv2.png" alt="公司標誌" style="width: 80px; height: 80px;">
             </div>
-            <h1 class="text-lg sm:text-xl font-bold text-center text-gray-900">西北社區QR Code報到與投票系統</h1>
+            <h1 class="text-lg sm:text-xl font-bold text-center text-gray-900">西北社區QR Code報到系統</h1>
             <form id="login-form" class="mt-8">
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-1">
@@ -195,9 +195,8 @@
             <!-- Tabs -->
             <div class="mb-6 border-b border-gray-200">
                 <nav class="flex space-x-4" aria-label="Tabs">
-                    <button id="tab-dashboard" class="tab-button active shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">報到儀表板</button>
+                    <button id="tab-dashboard" class="tab-button active shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">儀表板</button>
                     <button id="tab-residents" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">住戶管理</button>
-                    <button id="tab-voting" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">投票議題</button>
                     <button id="tab-scanner" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">掃碼報到</button>
                     <button id="tab-settings" class="tab-button shrink-0 px-4 py-2 text-sm font-medium text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300">系統設定</button>
                 </nav>
@@ -210,7 +209,7 @@
                     <div class="flex justify-end mb-4">
                         <button id="share-dashboard-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>
-                            分享
+                            分享儀表板
                         </button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -297,38 +296,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Voting Issues -->
-                <div id="voting-content" class="hidden">
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
-                            <h3 class="text-lg font-semibold">投票議題列表</h3>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <button id="add-issue-modal-btn" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 text-sm font-semibold">新增議題</button>
-                                <button id="delete-all-issues-btn" class="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 text-sm font-semibold">全部刪除</button>
-                            </div>
-                        </div>
-                        <div class="overflow-auto max-h-[70vh]">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50 sticky top-0">
-                                    <tr>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">議題編號</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">議題主旨</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">議題說明</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提案人</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">議題選項</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">結果</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
-                                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="issues-list" class="bg-white divide-y divide-gray-200">
-                                     <tr><td colspan="8" class="p-4 text-center text-gray-500">尚未新增任何議題</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Scanner -->
                 <div id="scanner-content" class="hidden">
@@ -396,7 +363,7 @@
                              <button type="submit" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700">儲存設定</button>
                         </form>
                         <div class="mt-8 border-t pt-6">
-                            <h4 class="text-lg font-semibold text-red-600 mb-2">危險区域</h4>
+                            <h4 class="text-lg font-semibold text-red-600 mb-2">危險區域</h4>
                             <p class="text-sm text-gray-600 mb-4">此操作將清除此活動所有住戶的報到紀錄，且無法復原。</p>
                             <button id="reset-checkin-btn" class="w-full bg-yellow-500 text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-600">重設此活動的報到紀錄</button>
                             <button id="delete-event-btn" class="mt-4 w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700">刪除整個活動</button>
@@ -554,53 +521,6 @@
         </div>
     </div>
 
-    <!-- Add/Edit Issue Modal -->
-    <div id="issue-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-            <h3 id="issue-modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">新增議題</h3>
-            <form id="issue-form">
-                <input type="hidden" id="issue-id">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="issue-type" class="block text-sm font-medium text-gray-700">議題類型</label>
-                        <select id="issue-type" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                            <option value="議題">議題</option>
-                            <option value="臨時動議">臨時動議</option>
-                            <option value="委員選舉">委員選舉</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="issue-number" class="block text-sm font-medium text-gray-700">議題編號</label>
-                        <input type="text" id="issue-number" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="issue-subject" class="block text-sm font-medium text-gray-700">議題主旨</label>
-                        <input type="text" id="issue-subject" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                    </div>
-                     <div class="md:col-span-2">
-                        <label for="issue-description" class="block text-sm font-medium text-gray-700">議題說明</label>
-                        <textarea id="issue-description" rows="3" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"></textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                         <label for="issue-proposer" class="block text-sm font-medium text-gray-700">提案人</label>
-                        <input type="text" id="issue-proposer" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">議題選項</label>
-                        <div id="issue-options-container" class="mt-2 space-y-2">
-                            <!-- Options will be dynamically added here -->
-                        </div>
-                        <button type="button" id="add-option-btn" class="mt-2 text-sm text-blue-600 hover:text-blue-800">+ 新增選項</button>
-                    </div>
-                </div>
-                <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                     <button type="submit" id="save-issue-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">儲存議題</button>
-                     <button type="button" id="cancel-issue-modal-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">取消</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 
     <!-- Print Area -->
     <div id="print-area" class="hidden"></div>
@@ -614,14 +534,14 @@
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
-  apiKey: "AIzaSyAQV9Obi4DAOleWEz24hGtuFN3bd9m3kPg",
-  authDomain: "nwcom-qrcodesystem-01.firebaseapp.com",
-  projectId: "nwcom-qrcodesystem-01",
-  storageBucket: "nwcom-qrcodesystem-01.firebasestorage.app",
-  messagingSenderId: "369644848531",
-  appId: "1:369644848531:web:636463dae1b46253b31466",
-  measurementId: "G-WVBPV1Y4KZ"
-};
+			apiKey: "AIzaSyAQV9Obi4DAOleWEz24hGtuFN3bd9m3kPg",
+			authDomain: "nwcom-qrcodesystem-01.firebaseapp.com",
+			projectId: "nwcom-qrcodesystem-01",
+			storageBucket: "nwcom-qrcodesystem-01.appspot.com",
+			messagingSenderId: "369644848531",
+			appId: "1:369644848531:web:636463dae1b46253b31466",
+			measurementId: "G-WVBPV1Y4KZ"
+		};
         
         // --- App Initialization ---
         let app, auth, db;
@@ -638,12 +558,10 @@
         let currentUser = { uid: null, name: null, role: null };
         let selectedEventId = null;
         let allResidentsForSelectedEvent = [];
-        let allIssuesForSelectedEvent = [];
         let unsubscribeResidents = () => {};
         let unsubscribeSettings = () => {};
         let unsubscribeUsers = () => {};
         let unsubscribeSession = () => {};
-        let unsubscribeIssues = () => {};
         let currentQuorumRatio = 0;
         let currentPersonQuorumRatio = 0;
 
@@ -654,8 +572,6 @@
         const residentDocPath = (eventId, residentId) => ["events", eventId, "residents", residentId];
         const usersCollectionPath = () => ["users"];
         const userDocPath = (userId) => ["users", userId];
-        const issuesCollectionPath = (eventId) => ["events", eventId, "issues"];
-        const issueDocPath = (eventId, issueId) => ["events", eventId, "issues", issueId];
 
         // This listener ensures that the rest of the code runs only after the HTML document is fully loaded.
         window.addEventListener('DOMContentLoaded', () => {
@@ -696,15 +612,6 @@
             const addUserForm = document.getElementById('add-user-form');
             const userManagementBtn = document.getElementById('user-management-btn');
             const backToEventsFromUsersBtn = document.getElementById('back-to-events-from-users-btn');
-            const issueModal = document.getElementById('issue-modal');
-            const issueForm = document.getElementById('issue-form');
-            const addIssueModalBtn = document.getElementById('add-issue-modal-btn');
-            const cancelIssueModalBtn = document.getElementById('cancel-issue-modal-btn');
-            const issueOptionsContainer = document.getElementById('issue-options-container');
-            const addOptionBtn = document.getElementById('add-option-btn');
-            const issueTypeSelect = document.getElementById('issue-type');
-            const issueNumberInput = document.getElementById('issue-number');
-            const deleteAllIssuesBtn = document.getElementById('delete-all-issues-btn');
             
             appContainer.style.display = 'block';
 
@@ -740,7 +647,14 @@
                 const password = passwordInput.value;
                 const emailForFirebase = `${username}@qrsystem.app`;
                 try {
-                    await signInWithEmailAndPassword(auth, emailForFirebase, password);
+                    const userCredential = await signInWithEmailAndPassword(auth, emailForFirebase, password);
+                    const user = userCredential.user;
+                    
+                    const sessionId = crypto.randomUUID();
+                    localStorage.setItem('loginSessionId', sessionId);
+                    const userRef = doc(db, 'users', user.uid);
+                    await updateDoc(userRef, { loginSessionId: sessionId });
+
                     if (rememberMeCheckbox.checked) {
                         localStorage.setItem('qrSystemUsername', username);
                     } else {
@@ -752,16 +666,16 @@
                         try {
                            const userCredential = await createUserWithEmailAndPassword(auth, 'test@qrsystem.app', '123456');
                            const userRef = doc(db, 'users', userCredential.user.uid);
-                           await setDoc(userRef, { username: 'test', email: userCredential.user.email, role: 'system_admin', loginSessionId: null });
+                           await setDoc(userRef, { username: 'test', email: userCredential.user.email, role: 'system_admin' });
                            alert('測試管理員帳號已建立，請重新登入。');
 
                         } catch (creationError) {
-                            alert(`測試帳號建立失敗: ${creationError.message}`);
+                             alert(`測試帳號建立失敗: ${creationError.message}`);
                         }
                     } else if (error.code === 'auth/invalid-credential') {
-                            alert(`登入失敗: 帳號或密碼錯誤。`);
+                             alert(`登入失敗: 帳號或密碼錯誤。`);
                     } else {
-                            alert(`登入失敗: ${error.message}`);
+                             alert(`登入失敗: ${error.message}`);
                     }
                 }
             });
@@ -787,32 +701,17 @@
                 unsubscribeSettings();
                 unsubscribeUsers();
                 unsubscribeSession();
-                unsubscribeIssues();
 
                 if (user && user.email) {
-                    const userRef = doc(db, 'users', user.uid);
-                    
-                    const localSessionId = localStorage.getItem('loginSessionId');
-                    // If no local session, this is a fresh login, so create one.
-                    if (!localSessionId) {
-                        const sessionId = crypto.randomUUID();
-                        localStorage.setItem('loginSessionId', sessionId);
-                    }
-
-                    const userSnap = await getDoc(userRef);
                     const username = user.email.split('@')[0];
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
 
                     if (userSnap.exists()) {
                         currentUser = { uid: user.uid, name: username, role: userSnap.data().role };
-                        const currentLocalSessionId = localStorage.getItem('loginSessionId');
-                        // Update session ID on login only if it doesn't match
-                        if (userSnap.data().loginSessionId !== currentLocalSessionId) {
-                             await updateDoc(userRef, { loginSessionId: currentLocalSessionId });
-                        }
                     } else {
                         const role = username === 'test' ? 'system_admin' : 'staff'; 
-                        const currentLocalSessionId = localStorage.getItem('loginSessionId');
-                        await setDoc(userRef, { username: username, email: user.email, role: role, loginSessionId: currentLocalSessionId });
+                        await setDoc(userRef, { username: username, email: user.email, role: role });
                         currentUser = { uid: user.uid, name: username, role: role };
                     }
                     
@@ -820,11 +719,11 @@
                        unsubscribeUsers = listenToUsers();
                     }
                     
-                    unsubscribeSession = onSnapshot(userRef, (userDoc) => {
+                    const localSessionId = localStorage.getItem('loginSessionId');
+                    unsubscribeSession = onSnapshot(doc(db, 'users', user.uid), (userDoc) => {
                         if (userDoc.exists()) {
                             const remoteSessionId = userDoc.data().loginSessionId;
-                            const currentLocalSessionId = localStorage.getItem('loginSessionId');
-                            if (currentLocalSessionId && remoteSessionId && currentLocalSessionId !== remoteSessionId) {
+                            if (localSessionId && remoteSessionId && localSessionId !== remoteSessionId) {
                                 unsubscribeSession(); 
                                 alert('您的帳號已在另一台裝置登入，此裝置將自動登出。');
                                 handleLogout();
@@ -857,14 +756,12 @@
                 const tabResidents = document.getElementById('tab-residents');
                 const tabScanner = document.getElementById('tab-scanner');
                 const tabSettings = document.getElementById('tab-settings');
-                const tabVoting = document.getElementById('tab-voting');
                 
                 // Set all to a baseline (Staff)
                 createEventBtn.style.display = 'none';
                 userManagementBtn.style.display = 'none';
                 tabResidents.style.display = 'none';
                 tabSettings.style.display = 'none';
-                tabVoting.style.display = 'none';
                 
                 // Dashboard and Scanner are always visible for logged-in users
                 tabDashboard.style.display = 'block';
@@ -873,7 +770,6 @@
                 // Junior Manager
                 if (role === 'junior_manager') {
                     tabResidents.style.display = 'block';
-                    tabVoting.style.display = 'block';
                 }
 
                 // Senior Manager
@@ -881,7 +777,6 @@
                     createEventBtn.style.display = 'block';
                     tabResidents.style.display = 'block';
                     tabSettings.style.display = 'block';
-                    tabVoting.style.display = 'block';
                 }
 
                 // System Admin
@@ -890,7 +785,6 @@
                     userManagementBtn.style.display = 'block';
                     tabResidents.style.display = 'block';
                     tabSettings.style.display = 'block';
-                    tabVoting.style.display = 'block';
                 }
             }
 
@@ -1061,16 +955,13 @@
                 
                 unsubscribeResidents();
                 unsubscribeResidents = listenToResidents(eventId);
-
-                unsubscribeIssues();
-                unsubscribeIssues = listenToIssues(eventId);
                 
                 switchTab('dashboard');
             }
 
             // --- Tabs Navigation ---
-            const tabs = { dashboard: document.getElementById('tab-dashboard'), residents: document.getElementById('tab-residents'), voting: document.getElementById('tab-voting'), scanner: document.getElementById('tab-scanner'), settings: document.getElementById('tab-settings') };
-            const contents = { dashboard: document.getElementById('dashboard-content'), residents: document.getElementById('residents-content'), voting: document.getElementById('voting-content'), scanner: document.getElementById('scanner-content'), settings: document.getElementById('settings-content')};
+            const tabs = { dashboard: document.getElementById('tab-dashboard'), residents: document.getElementById('tab-residents'), scanner: document.getElementById('tab-scanner'), settings: document.getElementById('tab-settings') };
+            const contents = { dashboard: document.getElementById('dashboard-content'), residents: document.getElementById('residents-content'), scanner: document.getElementById('scanner-content'), settings: document.getElementById('settings-content')};
             
             Object.keys(tabs).forEach(key => {
                 tabs[key].addEventListener('click', () => switchTab(key));
@@ -1084,7 +975,7 @@
                         tabs[key].classList.toggle('active', key === tabKey);
                     }
                      if(contents[key]) {
-                        contents[key].classList.toggle('hidden', key !== tabKey);
+                         contents[key].classList.toggle('hidden', key !== tabKey);
                      }
                 });
                 if (tabKey === 'scanner') {
@@ -1111,7 +1002,7 @@
                         currentQuorumRatio = parseFloat(data.ownershipRatio) || 0;
                         currentPersonQuorumRatio = parseFloat(data.personRatio) || 0;
 
-                        document.getElementById('community-name-display').textContent = data.communityName || '請先設定社區名称';
+                        document.getElementById('community-name-display').textContent = data.communityName || '請先設定社區名稱';
                         document.getElementById('event-title-display').textContent = data.eventName || 'QR Code 報到系統';
                         updateDashboardCalculations();
                     }
@@ -1377,10 +1268,10 @@
             });
 
             function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'zh-TW';
-            speechSynthesis.speak(utterance);
-            }
+				const utterance = new SpeechSynthesisUtterance(text);
+				utterance.lang = 'zh-TW';
+				speechSynthesis.speak(utterance);
+			}
 
             startScanBtn.addEventListener('click', () => {
                 if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
@@ -1597,11 +1488,11 @@
                                     <th style="width: 1.8cm;">QR Code</th>
                                     <th style="width: 1.8cm;">戶號</th>
                                     <th style="width: 1.8cm;">姓名</th>
-                                    <th style="width: 1.8cm;">地址</th>
+                                    <th style="width: 5.5cm;">地址</th>
                                     <th style="width: 1.8cm;">簽到</th>
-                                    <th style="width: 1.8cm;">是否委<br>託出席</th>
-                                    <th style="width: 3.8cm;">委託關係</th>
-                                    <th style="width: 1.8cm;">出席費</th>
+                                    <th style="width: 1.5cm;">是否委<br>託出席</th>
+                                    <th style="width: 3cm;">委託關係</th>
+                                    <th style="width: 1.5cm;">出席費</th>
                                     <th style="width: 1.8cm;">簽退</th>
                                 </tr>
                             </thead>
@@ -1809,9 +1700,9 @@
             });
 
              shareModal.addEventListener('click', (e) => {
-                if (e.target === shareModal) {
-                    shareModal.classList.add('hidden');
-                }
+                 if (e.target === shareModal) {
+                     shareModal.classList.add('hidden');
+                 }
             });
 
             // --- User Management Logic ---
@@ -1841,8 +1732,7 @@
                     await setDoc(userRef, {
                         username: newUsername,
                         email: email,
-                        role: newUserRole,
-                        loginSessionId: null
+                        role: newUserRole
                     });
                     alert(`帳號 ${newUsername} 建立成功！`);
                     addUserForm.reset();
